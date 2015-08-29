@@ -13,6 +13,14 @@
     "tts",
     "synthesis"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/icebob/webspeech.git"
+  },  
   "author": "Icebob",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "event-emitter": "^0.3.3",
+    "lodash": "^3.10.1"
+  }
 }
