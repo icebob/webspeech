@@ -4,7 +4,8 @@
 
 	WebSpeech API: https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html
  */
-var SpeechRecognizer, TTS, _, ee;
+var SpeechRecognizer, TTS, _, ee,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 _ = require("lodash");
 
@@ -16,23 +17,35 @@ ee = require("event-emitter");
  */
 
 TTS = (function() {
-  function TTS() {
+  function TTS(options) {
     var ex;
+    this.options = _.defaults(options || {}, {
+      language: 'en',
+      rate: 1.0,
+      volume: 1.0,
+      pitch: 1.0
+    });
     try {
       this.ss = new SpeechSynthesisUtterance;
     } catch (_error) {
       ex = _error;
       throw new Error('This browser does not have support for webspeech api');
     }
-    this.ss.rate = 1.0;
     this.ss.onend = function(event) {
       console.log("Speech finished.");
     };
   }
 
-  TTS.prototype.speak = function(lang, text) {
-    this.ss.lang = lang;
-    this.ss.text = text;
+  TTS.prototype.speak = function(obj) {
+    if (typeof obj === 'string') {
+      this.ss.text = obj;
+    } else {
+      this.ss.lang = obj.language || this.options.language;
+      this.ss.rate = obj.rate || this.options.rate;
+      this.ss.volume = obj.volume || this.options.volume;
+      this.ss.pitch = obj.pitch || this.options.pitch;
+      this.ss.text = obj.text;
+    }
     speechSynthesis.speak(this.ss);
   };
 
@@ -59,6 +72,9 @@ TTS = (function() {
 
 SpeechRecognizer = (function() {
   function SpeechRecognizer(options) {
+    this.once = bind(this.once, this);
+    this.off = bind(this.off, this);
+    this.on = bind(this.on, this);
     var SR, ex;
     this.options = _.defaults(options || {}, {
       language: 'en',
@@ -118,11 +134,17 @@ SpeechRecognizer = (function() {
     })(this);
   }
 
-  SpeechRecognizer.prototype.on = SpeechRecognizer.emitter.on;
+  SpeechRecognizer.prototype.on = function(event, cb) {
+    return this.emitter.on(event, cb);
+  };
 
-  SpeechRecognizer.prototype.off = SpeechRecognizer.emitter.off;
+  SpeechRecognizer.prototype.off = function(event, cb) {
+    return this.emitter.off(event, cb);
+  };
 
-  SpeechRecognizer.prototype.once = SpeechRecognizer.emitter.once;
+  SpeechRecognizer.prototype.once = function(event, cb) {
+    return this.emitter.once(event, cb);
+  };
 
   SpeechRecognizer.prototype.listen = function() {
     this.listener.start();

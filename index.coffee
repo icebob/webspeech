@@ -10,20 +10,35 @@ ee 	= require "event-emitter"
 	Speech Synthesis (TTS) wrapper class
 ###		
 class TTS
-	constructor: ->
+	constructor: (options) ->
+
+		@options = _.defaults (options || {}),
+			language: 'en'
+			rate: 1.0
+			volume: 1.0
+			pitch: 1.0
+
 		try
 			@ss = new SpeechSynthesisUtterance
 		catch ex
 			throw new Error('This browser does not have support for webspeech api')
-		@ss.rate = 1.0
+		# TODO: list voices
 
 		@ss.onend = (event) ->
 			console.log "Speech finished."
 			return
 
-	speak: (lang, text) ->
-		@ss.lang = lang
-		@ss.text = text
+	speak: (obj) ->
+
+		if typeof(obj) is 'string'
+			@ss.text = obj
+		else
+			@ss.lang = obj.language || @options.language
+			@ss.rate = obj.rate || @options.rate
+			@ss.volume = obj.volume || @options.volume
+			@ss.pitch = obj.pitch || @options.pitch
+			@ss.text = obj.text
+
 		speechSynthesis.speak @ss
 		return
 
@@ -94,9 +109,9 @@ class SpeechRecognizer
 			@emitter.emit("soundEnd", event)
 			return
 
-	on: @emitter.on
-	off: @emitter.off
-	once: @emitter.once
+	on: (event, cb) => @emitter.on event, cb
+	off: (event, cb) => @emitter.off event, cb
+	once: (event, cb) => @emitter.once event, cb
 
 	listen: -> 
 		@listener.start()
