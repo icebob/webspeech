@@ -1,0 +1,18 @@
+{
+  "name": "webspeech",
+  "version": "1.0.0",
+  "description": "Web Speech API wrapper",
+  "main": "index.js",
+  "scripts": {
+    "compile": "coffee -c -b index.coffee",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "webspeech",
+    "speech",
+    "tts",
+    "synthesis"
+  ],
+  "author": "Icebob",
+  "license": "MIT"
+}
