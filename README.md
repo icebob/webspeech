@@ -1,5 +1,6 @@
 # webspeech
-## Web Speech API wrapper for browser. Tested on Chrome 43+
+## Web Speech API wrapper for browser. 
+Tested on Chrome 43+
 
 ### Installation
 
